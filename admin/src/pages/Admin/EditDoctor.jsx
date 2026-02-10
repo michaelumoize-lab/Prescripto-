@@ -9,48 +9,53 @@ const EditDoctor = () => {
     const { doctors, aToken, backendUrl, getAllDoctors, setLoading, loading } = useContext(AdminContext)
     const navigate = useNavigate()
 
-    const [docData, setDocData] = useState(null) // Initialize as null for cleaner checks
+    const [docData, setDocData] = useState(null)
 
     useEffect(() => {
-    // This will run when the component mounts AND whenever the 'doctors' list updates
-    if (doctors && doctors.length > 0) {
-        const doctor = doctors.find(doc => doc._id === docId);
-        if (doctor) {
-            setDocData(doctor);
+        // If doctors exist in context, find the specific one
+        if (doctors && doctors.length > 0) {
+            const doctor = doctors.find(doc => doc._id === docId)
+            if (doctor) {
+                setDocData(doctor)
+            }
+        } else if (aToken) {
+            // This is the "Refresh Fix": If doctors list is empty but we are logged in, fetch it.
+            getAllDoctors()
         }
-    }
-    }, [docId, doctors]); // Adding 'doctors' to the dependency array is the key
+    }, [docId, doctors, aToken, getAllDoctors])
 
     const updateDoctor = async (e) => {
-    e.preventDefault();
-    try {
-        setLoading(true);
+        e.preventDefault()
+        try {
+            setLoading(true)
+            const { data } = await axios.post(
+                backendUrl + '/api/admin/update-doctor',
+                docData,
+                { headers: { aToken } }
+            )
 
-        // We send docData which now contains the _id and updated fields
-        const { data } = await axios.post(
-            backendUrl + '/api/admin/update-doctor', 
-            docData, 
-            { headers: { aToken } }
-        );
-        
-        if (data.success) {
-            toast.success(data.message);
-            await getAllDoctors(); // This refreshes the local state in AdminContext
-            navigate('/doctor-list');
-        } else {
-            toast.error(data.message);
+            if (data.success) {
+                toast.success(data.message)
+                await getAllDoctors()
+                navigate('/doctor-list')
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error("Frontend Update Error:", error)
+            toast.error(error.response?.data?.message || error.message)
+        } finally {
+            setLoading(false)
         }
-    } catch (error) {
-        console.error("Frontend Update Error:", error);
-        toast.error(error.response?.data?.message || error.message);
-    } finally {
-        setLoading(false);
     }
-};
 
-    // Prevents "undefined" errors during initial render
+    // Guard Clause: This will now show while 'getAllDoctors' is running in the background
     if (!docData) {
-        return <div className='m-5 text-gray-500'>Loading doctor data...</div>
+        return (
+            <div className='m-5 text-gray-500'>
+                <p>Fetching doctor details...</p>
+            </div>
+        )
     }
 
     return (
@@ -65,7 +70,6 @@ const EditDoctor = () => {
 
                 <div className='flex flex-col items-start gap-10 text-gray-600 lg:flex-row'>
                     <div className='flex flex-col w-full gap-4 lg:flex-1'>
-                        
                         <div className='flex flex-col gap-1'>
                             <p>Doctor Name</p>
                             <input 

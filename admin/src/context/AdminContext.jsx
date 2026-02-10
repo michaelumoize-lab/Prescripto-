@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from 'react-toastify';
 
@@ -10,10 +10,19 @@ const AdminContextProvider = (props) => {
     const [doctors, setDoctors] = useState([]);
     const [appointments, setAppointments] = useState([]);
     const [dashData, setDashData] = useState(false);
-    // New Loading State
     const [loading, setLoading] = useState(false);
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+    // --- AUTOMATIC DATA FETCH ON REFRESH ---
+    // This hook ensures that if a token exists, the app fetches data immediately
+    useEffect(() => {
+        if (aToken) {
+            getAllDoctors();
+            getAllAppointments();
+            getDashData();
+        }
+    }, [aToken]); 
 
     const getAllDoctors = async () => {
         setLoading(true);
@@ -22,7 +31,6 @@ const AdminContextProvider = (props) => {
 
             if (data.success) {
                 setDoctors(data.doctors)
-                console.log(data.doctors)
             } else {
                 toast.error(data.message)
             }
@@ -37,7 +45,6 @@ const AdminContextProvider = (props) => {
     const changeAvailablility = async (docId) => {
         setLoading(true);
         try {
-
             const { data } = await axios.post(backendUrl + '/api/admin/change-availability', { docId }, { headers: { aToken } });
 
             if (data.success) {
@@ -57,12 +64,10 @@ const AdminContextProvider = (props) => {
     const getAllAppointments = async () => {
         setLoading(true);
         try {
-
             const { data } = await axios.get(backendUrl + '/api/admin/appointments', { headers: { aToken } });
 
             if (data.success) {
                 setAppointments(data.appointments)
-                console.log(data.appointments)
             } else {
                 toast.error(data.message)
             }
@@ -95,12 +100,10 @@ const AdminContextProvider = (props) => {
     const getDashData = async () => {
         setLoading(true);
         try {
-
             const { data } = await axios.get(backendUrl + '/api/admin/dashboard', { headers: { aToken } });
 
             if (data.success) {
                 setDashData(data.dashData)
-                console.log(data.dashData)
             } else {
                 toast.error(data.message)
             }
@@ -119,7 +122,7 @@ const AdminContextProvider = (props) => {
         getAllAppointments,
         cancelAppointment,
         dashData, getDashData,
-        loading, setLoading // Exported values
+        loading, setLoading 
     }
 
     return (
