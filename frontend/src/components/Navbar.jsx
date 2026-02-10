@@ -54,7 +54,7 @@ const Navbar = () => {
 
         {/* --- NEW ADMIN PANEL LINK --- */}
         <a 
-          href="http://localhost:5174" 
+          href="https://prescripto-admin-ovst.onrender.com" 
           target="_blank" 
           rel="noopener noreferrer" 
           className='px-4 py-1 text-xs transition-all border rounded-full border-primary text-primary hover:bg-primary hover:text-white'
