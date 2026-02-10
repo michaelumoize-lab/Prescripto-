@@ -15,6 +15,8 @@ import { DoctorContext } from './context/DoctorContext'
 import DoctorDashboard from './pages/Doctor/DoctorDashboard'
 import DoctorAppointments from './pages/Doctor/DoctorAppointments'
 import DoctorProfile from './pages/Doctor/DoctorProfile'
+import ScrollToTop from './components/ScrollToTop'
+
 
 import DashboardHome from './pages/DashboardHome'
 
@@ -26,6 +28,7 @@ const App = () => {
   return aToken || dToken ? (
    <div className='bg-[#F8F9FD]'>
       <ToastContainer/>
+      <ScrollToTop />
       <Navbar/>
       <div className='flex items-start'>
         <Sidebar/>
