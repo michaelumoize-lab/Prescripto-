@@ -12,13 +12,14 @@ const EditDoctor = () => {
     const [docData, setDocData] = useState(null) // Initialize as null for cleaner checks
 
     useEffect(() => {
-        if (doctors.length > 0) {
-            const doctor = doctors.find(doc => doc._id === docId)
-            if (doctor) {
-                setDocData(doctor)
-            }
+    // This will run when the component mounts AND whenever the 'doctors' list updates
+    if (doctors && doctors.length > 0) {
+        const doctor = doctors.find(doc => doc._id === docId);
+        if (doctor) {
+            setDocData(doctor);
         }
-    }, [docId, doctors])
+    }
+    }, [docId, doctors]); // Adding 'doctors' to the dependency array is the key
 
     const updateDoctor = async (e) => {
     e.preventDefault();
