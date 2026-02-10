@@ -187,5 +187,32 @@ const adminDashboard = async (req, res) => {
   }
 }
 
+// API to update doctor profile data from Admin Panel
+const updateDoctor = async (req, res) => {
+    try {
+        const { _id, name, fees, address, speciality, available } = req.body;
 
-export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard };
+        // Basic validation
+        if (!_id) {
+            return res.json({ success: false, message: "Doctor ID is required" });
+        }
+
+        // We use findByIdAndUpdate to target the specific doctor
+        // We spread the body to update fields dynamically
+        await doctorModel.findByIdAndUpdate(_id, {
+            name,
+            fees,
+            address, // Ensure your doctorModel allows the address object
+            speciality,
+            available
+        });
+
+        res.json({ success: true, message: "Doctor Profile Updated Successfully" });
+
+    } catch (error) {
+        console.log("Update Controller Error:", error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard, updateDoctor };

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Doctors from './pages/Doctors'
@@ -17,12 +17,23 @@ import ApplyJob from './pages/ApplyJob'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
+// --- Added Imports ---
+import { AppContext } from './context/AppContext'
+import Loading from './components/Loading'
+
 const App = () => {
+
+  // --- Extract loading state ---
+  const { loading } = useContext(AppContext)
+
   return (
     <div className='mx-4 sm:mx-[10%]'>
-      <ToastContainer/>
+      {/* --- Added Loading Component --- */}
+      <Loading loading={loading} />
 
-      <Navbar/>
+      <ToastContainer />
+
+      <Navbar />
 
       <Routes>
         <Route path='/' element={<Home />} />
@@ -30,18 +41,16 @@ const App = () => {
         <Route path='/doctors/:speciality' element={<Doctors />} />
         <Route path='/login' element={<Login />} />
         <Route path='/about' element={<About />} />
-        <Route path='/contact' element={<Contact />} /> 
-        <Route path='/my-profile' element={<MyProfile />} /> 
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/my-profile' element={<MyProfile />} />
         <Route path='/my-appointments' element={<MyAppointments />} />
         <Route path='appointment/:docId' element={<Appointment />} />
 
         <Route path='/job-openings' element={<JobOpenings />} />
         <Route path='/apply/:jobId' element={<ApplyJob />} />
-     </Routes>
+      </Routes>
 
-     <Footer/>
-
-  
+      <Footer />
     </div>
   )
 }

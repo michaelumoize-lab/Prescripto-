@@ -6,7 +6,8 @@ import { toast } from 'react-toastify';
 
 const MyProfile = () => {
 
-    const { userData, setUserData, token, setToken, backendUrl, loadUserProfileData } = useContext(AppContext);
+    // Added setLoading to the destructuring
+    const { userData, setUserData, token, setToken, backendUrl, loadUserProfileData, setLoading } = useContext(AppContext);
 
     const [isEdit, setIsEdit] = useState(false);
     const [image, setImage] = useState(false);
@@ -16,6 +17,7 @@ const MyProfile = () => {
         const isSure = window.confirm("Are you sure you want to delete your account? This action is permanent.");
         
         if (isSure) {
+            setLoading(true); // Start Loading
             try {
                 // Note: We send an empty object {} as body because the backend gets userId from the token
                 const { data } = await axios.post(backendUrl + '/api/user/delete-account', {}, { headers: { token } });
@@ -30,11 +32,14 @@ const MyProfile = () => {
             } catch (error) {
                 console.log(error);
                 toast.error(error.message);
+            } finally {
+                setLoading(false); // Stop Loading
             }
         }
     };
 
     const updateUserProfileData = async () => {
+        setLoading(true); // Start Loading
         try {
             const formData = new FormData();
             formData.append("name", userData.name);
@@ -58,6 +63,8 @@ const MyProfile = () => {
         } catch (error) {
             console.log(error);
             toast.error(error.message);
+        } finally {
+            setLoading(false); // Stop Loading
         }
     }
 

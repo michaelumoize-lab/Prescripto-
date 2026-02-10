@@ -5,7 +5,8 @@ import { assets } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 
 const Dashboard = () => {
-  const { aToken, getDashData, cancelAppointment, dashData } =
+  // Added setLoading to the destructuring
+  const { aToken, getDashData, cancelAppointment, dashData, setLoading } =
     useContext(AdminContext);
   const { slotDateFormat } = useContext(AppContext);
 
@@ -14,6 +15,13 @@ const Dashboard = () => {
       getDashData();
     }
   }, [aToken]);
+
+  // Wrap the cancel action to handle loading state
+  const handleCancel = async (appointmentId) => {
+    setLoading(true);
+    await cancelAppointment(appointmentId);
+    setLoading(false);
+  };
 
   return (
     dashData && (
@@ -83,7 +91,7 @@ const Dashboard = () => {
                   </p>
                 ) : (
                   <img
-                    onClick={() => cancelAppointment(item._id)}
+                    onClick={() => handleCancel(item._id)} // Using handleCancel with loader
                     className="w-10 cursor-pointer"
                     src={assets.cancel_icon}
                     alt=""

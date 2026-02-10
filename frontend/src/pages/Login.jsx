@@ -6,7 +6,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const { backendUrl, token, setToken } = useContext(AppContext);
+  // Added setLoading to the destructuring
+  const { backendUrl, token, setToken, setLoading } = useContext(AppContext);
   const navigate = useNavigate();
 
   const [state, setState] = useState('Sign Up');
@@ -19,6 +20,7 @@ const Login = () => {
     event.preventDefault();
 
     try {
+      setLoading(true); // Start Loading
       if (state == 'Sign Up') {
         const { data } = await axios.post(backendUrl + '/api/user/register', {
           name,
@@ -45,6 +47,8 @@ const Login = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false); // Stop Loading
     }
   };
 

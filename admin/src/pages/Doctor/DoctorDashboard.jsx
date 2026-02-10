@@ -1,13 +1,17 @@
 import React from "react";
 import { useContext } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
+import { AdminContext } from "../../context/AdminContext"; // Added AdminContext
 import { useEffect } from "react";
 import { assets } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 
 const DoctorDashboard = () => {
-  const { dToken, dashData, setDashData, getDashData, cancelAppointment, completeAppointment  } =
+  const { dToken, dashData, getDashData, cancelAppointment, completeAppointment } =
     useContext(DoctorContext);
+  
+  // Use AdminContext to access the global loading state for the panel
+  const { setLoading } = useContext(AdminContext);
   const { currency, slotDateFormat } = useContext(AppContext);
 
   useEffect(() => {
@@ -15,6 +19,20 @@ const DoctorDashboard = () => {
       getDashData();
     }
   }, [dToken]);
+
+  // Handler for completing an appointment
+  const handleComplete = async (appointmentId) => {
+    setLoading(true);
+    await completeAppointment(appointmentId);
+    setLoading(false);
+  };
+
+  // Handler for cancelling an appointment
+  const handleCancel = async (appointmentId) => {
+    setLoading(true);
+    await cancelAppointment(appointmentId);
+    setLoading(false);
+  };
 
   return (
     dashData && (
@@ -78,21 +96,21 @@ const DoctorDashboard = () => {
                   </p>
                 </div>
                 {item.cancelled ? (
-                  <p className="text-xs text-red-400 text-medium">Cancelled</p>
+                  <p className="text-xs font-medium text-red-400">Cancelled</p>
                 ) : item.isCompleted ? (
-                  <p className="text-xs text-green-500 text-medium">
+                  <p className="text-xs font-medium text-green-500">
                     Completed
                   </p>
                 ) : (
                   <div className="flex">
                     <img
-                      onClick={() => cancelAppointment(item._id)}
+                      onClick={() => handleCancel(item._id)} // Updated
                       className="w-10 cursor-pointer"
                       src={assets.cancel_icon}
                       alt=""
                     />
                     <img
-                      onClick={() => completeAppointment(item._id)}
+                      onClick={() => handleComplete(item._id)} // Updated
                       className="w-10 cursor-pointer"
                       src={assets.tick_icon}
                       alt=""
