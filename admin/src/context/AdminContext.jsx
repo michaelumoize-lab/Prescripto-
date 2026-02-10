@@ -85,11 +85,12 @@ const AdminContextProvider = (props) => {
             const { data } = await axios.post(backendUrl + '/api/admin/cancel-appointment', { appointmentId }, { headers: { aToken } })
             if (data.success) {
                 toast.success(data.message)
-                getAllAppointments()
+                // Trigger BOTH to keep the whole app in sync
+                await getAllAppointments()
+                await getDashData() 
             } else {
                 toast.error(data.message)
             }
-
         } catch (error) {
             toast.error(error.message)
         } finally {

@@ -16,11 +16,8 @@ const Dashboard = () => {
     }
   }, [aToken]);
 
-  // Wrap the cancel action to handle loading state
   const handleCancel = async (appointmentId) => {
-    setLoading(true);
     await cancelAppointment(appointmentId);
-    setLoading(false);
   };
 
   return (
