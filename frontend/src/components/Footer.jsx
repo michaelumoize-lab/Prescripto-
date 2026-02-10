@@ -44,7 +44,7 @@ const Footer = () => {
               <span className='transition-colors cursor-pointer group-hover:text-primary'>info@prescripto.com</span>
             </li>
             <li className='flex items-center gap-3 group'>
-              <MapPin size={30} className='transition-transform duration-300 text-primary group-hover:scale-110' />
+              <MapPin size={20} className='transition-transform duration-300 text-primary group-hover:scale-110' />
               <span className='text-sm transition-colors cursor-pointer group-hover:text-primary'>123 Main Street, Lagos, Nigeria</span>
             </li>
           </ul>
