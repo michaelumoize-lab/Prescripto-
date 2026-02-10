@@ -1,0 +1,17 @@
+# Folders
+node_modules/
+.idea/
+dist/
+dist-ssr/
+
+# Environment / Secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
