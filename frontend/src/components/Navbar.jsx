@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { assets } from '../assets/assets'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
@@ -10,6 +10,19 @@ const Navbar = () => {
 
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+
+  // --- Logic to prevent background scroll ---
+  useEffect(() => {
+    if (showMobileMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    // Cleanup to reset scroll if component unmounts
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [showMobileMenu]);
 
   const logout = () => {
     localStorage.removeItem('token')
@@ -50,9 +63,7 @@ const Navbar = () => {
           <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
         </NavLink>
 
-        {/* --- ADMIN LINKS SECTION --- */}
         <div className='flex gap-2 ml-2'>
-          {/* Localhost Link */}
           <a 
             href="http://localhost:5174" 
             target="_blank" 
@@ -62,7 +73,6 @@ const Navbar = () => {
             ADMIN (LOCAL)
           </a>
 
-          {/* Production Link */}
           <a 
             href="https://prescripto-admin-ovst.onrender.com" 
             target="_blank" 
@@ -74,7 +84,6 @@ const Navbar = () => {
         </div>
       </ul>
 
-      {/* ... rest of your profile and mobile menu code remains exactly the same ... */}
       <div className='flex items-center gap-4'>
         {token ? (
           <div
@@ -110,7 +119,8 @@ const Navbar = () => {
           alt=""
         />
 
-        <div className={`${showMobileMenu ? 'fixed w-full' : 'w-0 h-0'} md:hidden top-0 right-0 bottom-0 z-20 overflow-hidden bg-white transition-all`}>
+        {/* --- Mobile Menu --- */}
+        <div className={`${showMobileMenu ? 'fixed w-full h-full' : 'w-0 h-0'} md:hidden top-0 right-0 bottom-0 z-20 overflow-hidden bg-white transition-all`}>
           <div className='flex items-center justify-between px-5 py-6'>
             <img className='w-36' src={assets.logo} alt="" />
             <img className='cursor-pointer w-7' onClick={() => setShowMobileMenu(false)} src={assets.cross_icon} alt="" />
@@ -121,7 +131,8 @@ const Navbar = () => {
             <NavLink onClick={() => setShowMobileMenu(false)} to='/about'><p className='px-4 py-2 rounded'>ABOUT</p></NavLink>
             <NavLink onClick={() => setShowMobileMenu(false)} to='/contact'><p className='px-4 py-2 rounded'>CONTACT</p></NavLink>
             
-            {/* Added Admin Links to Mobile Menu too */}
+            <hr className='w-full border-gray-200' />
+            
             <a href="http://localhost:5174" className='px-4 py-2 text-zinc-500'>ADMIN (LOCAL)</a>
             <a href="https://prescripto-admin-ovst.onrender.com" className='px-4 py-2 text-primary'>ADMIN (LIVE)</a>
 
