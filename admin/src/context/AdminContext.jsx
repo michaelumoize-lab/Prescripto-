@@ -1,11 +1,10 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useCallback } from "react"; // Added useCallback
 import axios from "axios";
 import { toast } from 'react-toastify';
 
 export const AdminContext = createContext();
 
 const AdminContextProvider = (props) => {
-
     const [aToken, setAToken] = useState(localStorage.getItem('aToken') ? localStorage.getItem('aToken') : "");
     const [doctors, setDoctors] = useState([]);
     const [appointments, setAppointments] = useState([]);
@@ -14,27 +13,16 @@ const AdminContextProvider = (props) => {
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-    // --- AUTOMATIC DATA FETCH ON REFRESH ---
-    // This hook ensures that if a token exists, the app fetches data immediately
-    useEffect(() => {
-        if (aToken) {
-            getAllDoctors();
-            getAllAppointments();
-            getDashData();
-        }
-    }, [aToken]); 
-
     const getAllDoctors = async () => {
+        if (!aToken) return; // Guard
         setLoading(true);
         try {
             const { data } = await axios.post(backendUrl + '/api/admin/all-doctors', {}, { headers: { aToken } });
-
             if (data.success) {
                 setDoctors(data.doctors)
             } else {
                 toast.error(data.message)
             }
-
         } catch (error) {
             toast.error(error.message)
         } finally {
@@ -46,14 +34,12 @@ const AdminContextProvider = (props) => {
         setLoading(true);
         try {
             const { data } = await axios.post(backendUrl + '/api/admin/change-availability', { docId }, { headers: { aToken } });
-
             if (data.success) {
                 toast.success(data.message)
                 getAllDoctors()
             } else {
                 toast.error(data.message)
             }
-
         } catch (error) {
             toast.error(error.message)
         } finally {
@@ -62,17 +48,16 @@ const AdminContextProvider = (props) => {
     }
 
     const getAllAppointments = async () => {
+        if (!aToken) return; // Guard
         setLoading(true);
         try {
             const { data } = await axios.get(backendUrl + '/api/admin/appointments', { headers: { aToken } });
-
             if (data.success) {
                 setAppointments(data.appointments)
             } else {
                 toast.error(data.message)
             }
         } catch (error) {
-            console.error("Axios Error Object:", error);
             toast.error(error.message)
         } finally {
             setLoading(false);
@@ -85,7 +70,6 @@ const AdminContextProvider = (props) => {
             const { data } = await axios.post(backendUrl + '/api/admin/cancel-appointment', { appointmentId }, { headers: { aToken } })
             if (data.success) {
                 toast.success(data.message)
-                // Trigger BOTH to keep the whole app in sync
                 await getAllAppointments()
                 await getDashData() 
             } else {
@@ -99,10 +83,10 @@ const AdminContextProvider = (props) => {
     }
 
     const getDashData = async () => {
+        if (!aToken) return; // Guard
         setLoading(true);
         try {
             const { data } = await axios.get(backendUrl + '/api/admin/dashboard', { headers: { aToken } });
-
             if (data.success) {
                 setDashData(data.dashData)
             } else {
@@ -114,6 +98,16 @@ const AdminContextProvider = (props) => {
             setLoading(false);
         }
     }
+
+    // --- AUTOMATIC DATA FETCH ON REFRESH ---
+    useEffect(() => {
+        // ONLY fetch if aToken actually exists and is not an empty string
+        if (aToken && aToken !== "") {
+            getAllDoctors();
+            getAllAppointments();
+            getDashData();
+        }
+    }, [aToken]); 
 
     const value = {
         aToken, setAToken,
