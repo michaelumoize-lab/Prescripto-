@@ -96,9 +96,9 @@ const Navbar = () => {
             {/* Profile Dropdown Menu */}
             <div className={`absolute top-0 right-0 z-30 pt-14 ${showProfileMenu ? 'block' : 'hidden'}`}>
               <div className='flex flex-col gap-4 p-4 text-base font-medium text-gray-600 rounded shadow-lg min-w-48 bg-stone-100'>
-                <p onClick={() => { navigate('/my-profile'); setShowProfileMenu(false) }} className='cursor-pointer hover:text-black'>My Profile</p>
-                <p onClick={() => { navigate('/my-appointments'); setShowProfileMenu(false) }} className='cursor-pointer hover:text-black'>My Appointments</p>
-                <p onClick={() => { logout(); setShowProfileMenu(false) }} className='font-semibold text-red-500 cursor-pointer hover:text-black'>Logout</p>
+                <p onClick={(e) => { e.stopPropagation(); navigate('/my-profile'); setShowProfileMenu(false) }} className='cursor-pointer select-none hover:text-black'>My Profile</p>
+                <p onClick={(e) => { e.stopPropagation(); navigate('/my-appointments'); setShowProfileMenu(false) }} className='cursor-pointer select-none hover:text-black'>My Appointments</p>
+                <p onClick={(e) => { e.stopPropagation(); logout(); setShowProfileMenu(false) }} className='font-semibold text-red-500 cursor-pointer select-none hover:text-black'>Logout</p>
               </div>
             </div>
           </div>
