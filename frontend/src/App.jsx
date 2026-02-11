@@ -27,6 +27,7 @@ const App = () => {
   // --- Extract loading state ---
   const { loading } = useContext(AppContext)
 
+
   return (
     <div className='mx-4 sm:mx-[10%]'>
       {/* --- Added Loading Component --- */}

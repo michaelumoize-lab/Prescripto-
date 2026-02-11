@@ -19,3 +19,7 @@ createRoot(document.getElementById("root")).render(
   </BrowserRouter>,
 );
 
+console.log(AdminContextProvider);
+console.log(typeof AdminContextProvider);
+
+
