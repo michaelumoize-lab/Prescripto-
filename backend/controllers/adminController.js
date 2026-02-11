@@ -215,4 +215,28 @@ const updateDoctor = async (req, res) => {
     }
 }
 
-export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard, updateDoctor };
+const deleteDoctor = async (req, res) => {
+    try {
+        const { docId } = req.body;
+
+        // Optional: Check if the doctor exists first
+        const doctor = await doctorModel.findById(docId);
+        if (!doctor) {
+            return res.json({ success: false, message: "Doctor not found" });
+        }
+
+        // Action: Remove the doctor
+        await doctorModel.findByIdAndDelete(docId);
+
+        // Optional: You might also want to delete the doctor's image from Cloudinary here
+        // or cancel their pending appointments to keep the database clean.
+
+        res.json({ success: true, message: "Doctor deleted successfully" });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard, updateDoctor, deleteDoctor };

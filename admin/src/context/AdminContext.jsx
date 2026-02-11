@@ -101,11 +101,11 @@ const AdminContextProvider = (props) => {
 
     // --- AUTOMATIC DATA FETCH ON REFRESH ---
     useEffect(() => {
-        // ONLY fetch if aToken actually exists and is not an empty string
-        if (aToken && aToken !== "") {
-            getAllDoctors();
-            getAllAppointments();
-            getDashData();
+        if (aToken) {
+            // Only fetch if we don't already have the data
+            if (doctors.length === 0) getAllDoctors();
+            if (appointments.length === 0) getAllAppointments();
+            if (!dashData) getDashData();
         }
     }, [aToken]); 
 
