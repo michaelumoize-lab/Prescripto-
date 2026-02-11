@@ -6,7 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import razorpay from "razorpay";
-import reviewModel from "../models/reviewModel.js";
+
 
 // API to register user
 const registerUser = async (req, res) => {
@@ -305,35 +305,6 @@ const deleteAccount = async (req, res) => {
     }
 }
 
-const addReview = async (req, res) => {
-    try {
-        const { userId, userName, userImage, rating, comment } = req.body;
-
-        if (!userId || !rating || !comment) {
-            return res.json({ success: false, message: "Missing Details" });
-        }
-
-        const reviewData = {
-            userId,
-            userName,
-            userImage,
-            rating,
-            comment,
-            date: Date.now()
-        };
-
-        const newReview = new reviewModel(reviewData);
-        await newReview.save();
-
-        res.json({ success: true, message: "Review Submitted Successfully" });
-
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
-    }
-}
-
-
 
 export {
   registerUser,
@@ -346,5 +317,4 @@ export {
   paymentRazorpay,
   verifyRazorpay,
   deleteAccount, 
-  addReview
 };

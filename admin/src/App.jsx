@@ -18,7 +18,6 @@ import DoctorProfile from './pages/Doctor/DoctorProfile'
 import ScrollToTop from './components/ScrollToTop'
 import Loading from './components/Loading'
 import DashboardHome from './pages/DashboardHome'
-import Reviews from './pages/Admin/Reviews'
 
 const App = () => {
   // Pull loading states from both to be safe
@@ -44,7 +43,7 @@ const App = () => {
           <Route path='/add-doctor' element={<AddDoctor />} />
           <Route path='/doctor-list' element={<DoctorsList />} />
           <Route path='/edit-doctor/:docId' element={<EditDoctor />} />
-          <Route path='/reviews' element={<Reviews />} />
+
 
           {/* Doctor Routes */}
           <Route path='/doctor-dashboard' element={<DoctorDashboard />} />

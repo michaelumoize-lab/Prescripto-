@@ -239,13 +239,5 @@ const deleteDoctor = async (req, res) => {
     }
 }
 
-const getAllReviews = async (req, res) => {
-    try {
-        const reviews = await reviewModel.find({});
-        res.json({ success: true, reviews });
-    } catch (error) {
-        res.json({ success: false, message: error.message });
-    }
-}
 
-export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard, updateDoctor, deleteDoctor, getAllReviews };
+export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard, updateDoctor, deleteDoctor };
