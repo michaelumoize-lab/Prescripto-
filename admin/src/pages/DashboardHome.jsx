@@ -1,7 +1,7 @@
-import React, { useContext, useEffect } from 'react';
-import { AdminContext } from '../context/AdminContext';
-import { DoctorContext } from '../context/DoctorContext';
-import { motion } from 'framer-motion';
+import React, { useContext, useEffect } from "react";
+import { AdminContext } from "../context/AdminContext";
+import { DoctorContext } from "../context/DoctorContext";
+import { motion } from "framer-motion";
 
 const DashboardHome = () => {
   const { aToken } = useContext(AdminContext);
@@ -9,8 +9,10 @@ const DashboardHome = () => {
 
   const isAdmin = !!aToken;
 
+  console.log("DoctorContext:", { dToken, profileData, getProfileData });
+
   useEffect(() => {
-    if (dToken) {
+    if (dToken && typeof getProfileData === "function") {
       getProfileData();
     }
   }, [dToken]);
@@ -25,7 +27,7 @@ const DashboardHome = () => {
   return (
     // Responsive padding: p-4 on mobile, p-6 on desktop
     <div className="p-4 md:p-6 min-h-[85vh] bg-gray-50/30">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -34,7 +36,7 @@ const DashboardHome = () => {
       >
         {/* Background Gradient */}
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary via-[#5f6FFF] to-indigo-900 opacity-95"></div>
-        
+
         {/* Floating Orbs - Hidden on smallest screens to improve performance/cleanliness */}
         <div className="absolute top-0 right-0 hidden translate-x-10 -translate-y-10 rounded-full sm:block w-80 h-80 bg-white/10 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 hidden w-64 h-64 -translate-x-10 translate-y-10 rounded-full sm:block bg-blue-400/20 blur-3xl"></div>
@@ -60,13 +62,13 @@ const DashboardHome = () => {
 
             {/* Paragraph - Scaled text and max-width */}
             <p className="max-w-xl mt-4 text-sm font-light leading-relaxed md:mt-8 sm:text-base md:text-xl text-indigo-50/90">
-              {isAdmin 
-                ? "Your healthcare network is performing optimally. Access detailed analytics and management tools from the sidebar menu." 
+              {isAdmin
+                ? "Your healthcare network is performing optimally. Access detailed analytics and management tools from the sidebar menu."
                 : "You have a clear view of your day ahead. Review patient records, manage consultations, and update your clinical availability."}
             </p>
 
             {/* Date section - hidden on very small heights or adjusted margin */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
@@ -74,10 +76,10 @@ const DashboardHome = () => {
             >
               <div className="w-8 md:w-10 h-[2px] bg-indigo-300/50"></div>
               <p className="text-[10px] md:text-sm font-semibold tracking-widest text-indigo-100 uppercase">
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
                 })}
               </p>
             </motion.div>
