@@ -6,40 +6,37 @@ import { toast } from 'react-toastify';
 
 const MyProfile = () => {
 
-    // Added setLoading to the destructuring
     const { userData, setUserData, token, setToken, backendUrl, loadUserProfileData, setLoading } = useContext(AppContext);
 
     const [isEdit, setIsEdit] = useState(false);
     const [image, setImage] = useState(false);
+    
+    // --- NEW MODAL STATE ---
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // --- NEW DELETE ACCOUNT LOGIC ---
     const deleteAccount = async () => {
-        const isSure = window.confirm("Are you sure you want to delete your account? This action is permanent.");
-        
-        if (isSure) {
-            setLoading(true); // Start Loading
-            try {
-                // Note: We send an empty object {} as body because the backend gets userId from the token
-                const { data } = await axios.post(backendUrl + '/api/user/delete-account', {}, { headers: { token } });
+        setLoading(true);
+        try {
+            const { data } = await axios.post(backendUrl + '/api/user/delete-account', {}, { headers: { token } });
 
-                if (data.success) {
-                    toast.success("Account deleted successfully");
-                    setToken(false); // Logs user out
-                    localStorage.removeItem('token'); // Clears session
-                } else {
-                    toast.error(data.message);
-                }
-            } catch (error) {
-                console.log(error);
-                toast.error(error.message);
-            } finally {
-                setLoading(false); // Stop Loading
+            if (data.success) {
+                toast.success("Account deleted successfully");
+                setToken(false);
+                localStorage.removeItem('token');
+            } else {
+                toast.error(data.message);
             }
+        } catch (error) {
+            console.log(error);
+            toast.error(error.message);
+        } finally {
+            setShowDeleteModal(false);
+            setLoading(false);
         }
     };
 
     const updateUserProfileData = async () => {
-        setLoading(true); // Start Loading
+        setLoading(true);
         try {
             const formData = new FormData();
             formData.append("name", userData.name);
@@ -64,12 +61,47 @@ const MyProfile = () => {
             console.log(error);
             toast.error(error.message);
         } finally {
-            setLoading(false); // Stop Loading
+            setLoading(false);
         }
     }
 
     return userData && (
-        <div className='flex flex-col max-w-lg gap-2 text-sm'>
+        <div className='relative flex flex-col max-w-lg gap-2 text-sm'>
+
+            {/* --- CUSTOM DELETE CONFIRMATION MODAL --- */}
+            {showDeleteModal && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm'>
+                    <div className='w-full max-w-sm p-8 mx-4 duration-200 bg-white shadow-2xl rounded-2xl animate-in zoom-in'>
+                        <div className='text-center'>
+                            <div className='flex items-center justify-center w-16 h-16 mx-auto mb-4 text-red-500 rounded-full bg-red-50'>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                </svg>
+                            </div>
+                            <h2 className='text-xl font-bold text-slate-800'>Delete Account?</h2>
+                            <p className='mt-2 text-slate-500'>
+                                Are you sure you want to delete your account? All your data will be <b>permanently removed</b>.
+                            </p>
+                        </div>
+                        <div className='flex gap-3 mt-8'>
+                            <button 
+                                onClick={() => setShowDeleteModal(false)}
+                                className='flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-medium hover:bg-slate-200 transition-all'
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={deleteAccount}
+                                className='flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-all'
+                            >
+                                Yes, Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Existing Profile UI */}
             {
                 isEdit
                     ? <label htmlFor='image'>
@@ -84,7 +116,7 @@ const MyProfile = () => {
 
             {
                 isEdit
-                    ? <input className="mt-4 text-3xl font-medium bg-gray-50 max-w-60" type=" text" value={userData.name} onChange={(e) => setUserData(prev => ({ ...prev, name: e.target.value }))} />
+                    ? <input className="mt-4 text-3xl font-medium bg-gray-50 max-w-60" type="text" value={userData.name} onChange={(e) => setUserData(prev => ({ ...prev, name: e.target.value }))} />
                     : <p className="mt-4 text-3xl font-medium text-neutral-800">{userData.name}</p>
             }
 
@@ -138,7 +170,6 @@ const MyProfile = () => {
                 </div>
             </div>
 
-            {/* --- UPDATED BUTTON CONTAINER --- */}
             <div className="flex gap-4 mt-10">
                 {
                     isEdit
@@ -149,13 +180,12 @@ const MyProfile = () => {
                 {!isEdit && (
                     <button 
                         className="px-8 py-2 text-red-500 transition-all border border-red-500 rounded-full hover:bg-red-500 hover:text-white" 
-                        onClick={deleteAccount}
+                        onClick={() => setShowDeleteModal(true)} // Opens UI modal
                     >
                         Delete Account
                     </button>
                 )}
             </div>
-
         </div>
     );
 };
