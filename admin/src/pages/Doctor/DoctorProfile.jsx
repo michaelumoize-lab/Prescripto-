@@ -2,46 +2,20 @@ import React from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { DoctorContext } from '../../context/DoctorContext'
 import { AppContext } from '../../context/AppContext'
-import { AdminContext } from '../../context/AdminContext' // Import AdminContext for loading
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
 const DoctorProfile = () => {
 
-  const { dToken, profileData, getProfileData, setProfileData, backendUrl } = useContext(DoctorContext);
+  const { dToken, profileData, getProfileData, setProfileData, backendUrl, setLoading, updateProfile } = useContext(DoctorContext);
   const { currency } = useContext(AppContext);
-  const { setLoading } = useContext(AdminContext); // Extract setLoading
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const updateProfile = async () => {
-    try {
-      setLoading(true); // Start Loading
-      const updateData = {
-        address: profileData.address,
-        fees: profileData.fees,
-        available: profileData.available
-      }
-
-      const { data } = await axios.post(backendUrl + '/api/doctor/update-profile', updateData, { headers: { dToken } });
-      if (data.success) {
-        toast.success(data.message)
-        setIsEdit(false)
-        getProfileData()
-      } else {
-        toast.error(data.message)
-      }
-
-    } catch (error) {
-      console.log(error)
-      toast.error(error.message)
-    } finally {
-      setLoading(false); // Stop Loading
-    }
-  }
-
   useEffect(() => {
-    getProfileData()
+    if (dToken) {
+      getProfileData()
+    }
   }, [dToken]);
 
 
@@ -90,7 +64,7 @@ const DoctorProfile = () => {
 
           {
             isEdit
-              ? <button onClick={updateProfile} className='px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white'>Save</button>
+              ? <button onClick={async () => { await updateProfile(); setIsEdit(false); }} className='px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white'>Save</button>
               : <button onClick={() => setIsEdit(true)} className='px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white'>Edit</button>
 
           }

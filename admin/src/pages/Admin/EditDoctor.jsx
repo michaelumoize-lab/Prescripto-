@@ -63,9 +63,12 @@ const EditDoctor = () => {
     if (!foundDoctor && doctors.length === 0) {
         return (
             <div className='flex items-center justify-center min-h-[60vh] w-full'>
-                <div className='flex flex-col items-center gap-2'>
-                    <div className='w-8 h-8 border-4 border-indigo-200 rounded-full border-t-primary animate-spin'></div>
-                    <p className='text-zinc-500 animate-pulse'>Loading doctor profile...</p>
+                <div className='flex flex-col items-center gap-3 p-8 bg-white shadow-xl rounded-2xl'>
+                    <div className="relative">
+                        <div className="w-16 h-16 border-4 border-gray-100 rounded-full"></div>
+                        <div className="absolute top-0 w-16 h-16 border-4 border-t-primary rounded-full animate-spin"></div>
+                    </div>
+                    <p className='text-lg font-medium text-zinc-500 animate-pulse'>Loading doctor profile...</p>
                 </div>
             </div>
         )

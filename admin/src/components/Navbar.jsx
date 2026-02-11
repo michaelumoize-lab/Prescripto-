@@ -16,11 +16,9 @@ const Navbar = () => {
         navigate('/'); // Redirect to login page on logout
         if (aToken) {
             setAToken('');
-            localStorage.removeItem('aToken');
         }
         if (dToken) {
             setDToken('');
-            localStorage.removeItem('dToken');
         }
     }
 

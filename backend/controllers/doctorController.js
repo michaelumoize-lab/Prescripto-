@@ -55,7 +55,7 @@ const loginDoctor = async (req, res) => {
 //API to get doctor appointments for doctor panel
 const appointmentsDoctor = async (req, res) => {
   try {
-    const { docId } = req.body;
+    const docId = req.doctor.id;
     const appointments = await appointmentModel.find({ docId });
 
     res.json({ success: true, appointments });
@@ -71,7 +71,7 @@ const appointmentComplete = async (req, res) => {
     const { docId, appointmentId } = req.body;
     const appointmentData = await appointmentModel.findById(appointmentId);
 
-    if (appointmentData && appointmentData.docId === docId) {
+    if (appointmentData && appointmentData.docId.toString() === docId.toString()) {
       await appointmentModel.findByIdAndUpdate(appointmentId, {
         isCompleted: true,
       });
@@ -91,7 +91,7 @@ const appointmentCancel = async (req, res) => {
     const { docId, appointmentId } = req.body;
     const appointmentData = await appointmentModel.findById(appointmentId);
 
-    if (appointmentData && appointmentData.docId === docId) {
+    if (appointmentData && appointmentData.docId.toString() === docId.toString()) {
       await appointmentModel.findByIdAndUpdate(appointmentId, {
         cancelled: true,
       });
@@ -108,7 +108,7 @@ const appointmentCancel = async (req, res) => {
 //API to get dashboard data for doctor panel
 const doctorDashboard = async (req, res) => {
   try {
-    const { docId } = req.body;
+    const docId = req.doctor.id;
     const appointments = await appointmentModel.find({ docId });
 
     let earnings = 0;
@@ -145,12 +145,18 @@ const doctorDashboard = async (req, res) => {
 
 const doctorProfile = async (req, res) => {
   try {
-    const { docId } = req.body;
-    const profileData = await doctorModel.findById(docId).select("-password");
-    res.json({ success: true, profileData });
+    const docId = req.doctor.id;
+    const profile = await doctorModel.findById(docId).select("-password");
+    
+    // Safety: ensure address object exists so frontend doesn't crash on .line1
+    if (profile && !profile.address) {
+        profile.address = { line1: '', line2: '' };
+    }
+
+    res.json({ success: true, profile }); // Changed profileData to profile
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

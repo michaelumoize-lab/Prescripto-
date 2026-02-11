@@ -7,6 +7,7 @@ const DoctorDashboard = () => {
   const { 
     dToken, 
     dashData, 
+    setDashData, // Added setDashData
     getDashData, 
     cancelAppointment, 
     completeAppointment,
@@ -19,6 +20,8 @@ const DoctorDashboard = () => {
     if (dToken) {
       getDashData();
     }
+    // Cleanup dashData on unmount to prevent seeing old data when returning to dashboard
+    return () => setDashData(false);
   }, [dToken]);
 
   return dashData && slotDateFormat ? (
@@ -27,7 +30,7 @@ const DoctorDashboard = () => {
         <div className="flex items-center gap-2 p-4 transition-all bg-white border-2 border-gray-100 rounded cursor-pointer min-w-52 hover:scale-105">
           <img className="w-14" src={assets.earning_icon} alt="" />
           <div>
-            <p className="text-xl font-semibold text-gray-600">{currency}{dashData.earnings}</p>
+            <p className="text-xl font-semibold text-gray-600">{currency}{dashData.earnings || 0}</p>
             <p className="text-gray-400">Earnings</p>
           </div>
         </div>
@@ -93,8 +96,14 @@ const DoctorDashboard = () => {
       </div>
     </div>
   ) : (
-    <div className="flex items-center justify-center min-h-screen">
-       <p className="text-gray-500">Loading Dashboard...</p>
+    <div className="flex items-center justify-center min-h-[80vh] w-full">
+        <div className='flex flex-col items-center gap-3 p-8 bg-white shadow-xl rounded-2xl'>
+            <div className="relative">
+                <div className="w-16 h-16 border-4 border-gray-100 rounded-full"></div>
+                <div className="absolute top-0 w-16 h-16 border-4 border-t-primary rounded-full animate-spin"></div>
+            </div>
+            <p className='text-lg font-medium text-zinc-500 animate-pulse'>Loading Dashboard...</p>
+        </div>
     </div>
   );
 };
