@@ -20,13 +20,17 @@ import Loading from './components/Loading'
 import DashboardHome from './pages/DashboardHome'
 
 const App = () => {
+  // Pull loading states from both to be safe
+  const { aToken, loading: adminLoading } = useContext(AdminContext);
+  const { dToken, loading: doctorLoading } = useContext(DoctorContext);
 
-  const { aToken, loading } = useContext(AdminContext);
-  const { dToken } = useContext(DoctorContext)
+  // Use a combined loading check
+  const isAppLoading = adminLoading || doctorLoading;
 
   return aToken || dToken ? (
     <div className='bg-[#F8F9FD]'>
-      <Loading loading={loading} />
+      {/* Pass the stable boolean */}
+      <Loading loading={!!isAppLoading} /> 
       <ToastContainer />
       <ScrollToTop />
       <Navbar />
@@ -34,13 +38,10 @@ const App = () => {
         <Sidebar />
         <Routes>
           <Route path="/" element={<DashboardHome />} />
-          
-          {/* Admin Routes */}
           <Route path='/admin-dashboard' element={<Dashboard />} />
           <Route path='/all-appointments' element={<AllAppointments />} />
           <Route path='/add-doctor' element={<AddDoctor />} />
           <Route path='/doctor-list' element={<DoctorsList />} />
-          {/* Dynamic Route for Editing */}
           <Route path='/edit-doctor/:docId' element={<EditDoctor />} />
 
           {/* Doctor Routes */}

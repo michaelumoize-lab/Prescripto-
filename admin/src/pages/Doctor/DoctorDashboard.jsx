@@ -4,7 +4,16 @@ import { AppContext } from "../../context/AppContext";
 import { assets } from "../../assets/assets";
 
 const DoctorDashboard = () => {
-  const { dToken, dashData, getDashData, cancelAppointment, completeAppointment } = useContext(DoctorContext);
+  // Pull loading and setLoading from DoctorContext to stay independent
+  const { 
+    dToken, 
+    dashData, 
+    getDashData, 
+    cancelAppointment, 
+    completeAppointment,
+    loading 
+  } = useContext(DoctorContext);
+  
   const { currency, slotDateFormat } = useContext(AppContext);
 
   useEffect(() => {
@@ -14,9 +23,8 @@ const DoctorDashboard = () => {
   }, [dToken]);
 
   return (
-    dashData && (
+    dashData && slotDateFormat ? (
       <div className="m-5">
-        {/* Statistics Cards */}
         <div className="flex flex-wrap gap-3">
           <div className="flex items-center gap-2 p-4 transition-all bg-white border-2 border-gray-100 rounded cursor-pointer min-w-52 hover:scale-105">
             <img className="w-14" src={assets.earning_icon} alt="" />
@@ -43,7 +51,6 @@ const DoctorDashboard = () => {
           </div>
         </div>
 
-        {/* Latest Bookings Table */}
         <div className="bg-white">
           <div className="flex items-center gap-2.5 px-4 py-4 mt-10 rounded-t border">
             <img src={assets.list_icon} alt="" />
@@ -64,16 +71,17 @@ const DoctorDashboard = () => {
                 ) : item.isCompleted ? (
                   <p className="text-xs font-medium text-green-500">Completed</p>
                 ) : (
-                  <div className="flex">
+                  <div className="flex gap-2">
+                    {/* Disable clicks if an action is currently loading */}
                     <img
-                      onClick={() => cancelAppointment(item._id)}
-                      className="w-10 cursor-pointer"
+                      onClick={() => !loading && cancelAppointment(item._id)}
+                      className={`w-10 cursor-pointer ${loading ? 'opacity-50' : ''}`}
                       src={assets.cancel_icon}
                       alt="Cancel"
                     />
                     <img
-                      onClick={() => completeAppointment(item._id)}
-                      className="w-10 cursor-pointer"
+                      onClick={() => !loading && completeAppointment(item._id)}
+                      className={`w-10 cursor-pointer ${loading ? 'opacity-50' : ''}`}
                       src={assets.tick_icon}
                       alt="Complete"
                     />
