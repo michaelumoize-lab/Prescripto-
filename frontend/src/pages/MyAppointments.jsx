@@ -9,7 +9,7 @@ const MyAppointments = () => {
     const { backendUrl, token, getDoctorsData, setLoading } = useContext(AppContext)
 
     const [appointments, setAppointments] = useState([])
-    const [filter, setFilter] = useState('All') // New Filter State
+    const [filter, setFilter] = useState('All') 
     const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
     const [showCancelModal, setShowCancelModal] = useState(false)
@@ -30,6 +30,52 @@ const MyAppointments = () => {
             }
         } catch (error) {
             toast.error(error.message)
+        }
+    }
+
+    // --- RESTORED RAZORPAY LOGIC ---
+    const initPay = (order) => {
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: order.amount,
+            currency: order.currency,
+            name: 'Appointment Payment',
+            description: 'Appointment Payment',
+            order_id: order.id,
+            receipt: order.receipt,
+            handler: async (response) => {
+                try {
+                    setLoading(true)
+                    const { data } = await axios.post(backendUrl + '/api/user/verifyRazorpay', response, { headers: { token } })
+                    if (data.success) {
+                        getUserAppointments()
+                        navigate('/my-appointments')
+                    }
+                } catch (error) {
+                    console.log(error)
+                    toast.error(error.message)
+                } finally {
+                    setLoading(false)
+                }
+            }
+        }
+        const rzp = new window.Razorpay(options)
+        rzp.open()
+    }
+
+    const appointmentRazorpay = async (appointmentId) => {
+        try {
+            setLoading(true)
+            const { data } = await axios.post(backendUrl + '/api/user/payment-razorpay', { appointmentId }, { headers: { token } })
+
+            if (data.success) {
+                initPay(data.order)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -68,7 +114,6 @@ const MyAppointments = () => {
         setShowCancelModal(true)
     }
 
-    // Payment and Effect logic remains the same...
     useEffect(() => {
         if (token) getUserAppointments()
     }, [token])
@@ -78,7 +123,6 @@ const MyAppointments = () => {
             <div className='flex flex-col justify-between gap-4 mt-12 mb-4 border-b sm:flex-row sm:items-center'>
                 <p className='pb-3 font-medium text-zinc-700'>My Appointments</p>
                 
-                {/* --- FILTER BUTTONS --- */}
                 <div className='flex gap-2 pb-3 overflow-x-auto text-xs sm:text-sm'>
                     {['All', 'Paid', 'Completed', 'Cancelled'].map((status) => (
                         <button
@@ -96,18 +140,16 @@ const MyAppointments = () => {
                 </div>
             </div>
 
-            {/* Custom Cancel Modal stays here... */}
             {showCancelModal && (
                 <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm'>
-                    {/* ... (Previous Modal Code) ... */}
                     <div className='w-full max-w-sm p-8 mx-4 bg-white shadow-2xl rounded-2xl'>
                          <div className='text-center'>
                             <h2 className='text-xl font-bold text-slate-800'>Cancel Appointment?</h2>
-                            <p className='mt-2 text-slate-500'>Are you sure? This cannot be undone.</p>
+                            <p className='mt-2 text-slate-500'>Are you sure? This action cannot be undone.</p>
                         </div>
                         <div className='flex gap-3 mt-8'>
-                            <button onClick={() => setShowCancelModal(false)} className='flex-1 py-2.5 bg-slate-100 rounded-xl'>No</button>
-                            <button onClick={cancelAppointment} className='flex-1 py-2.5 bg-red-500 text-white rounded-xl'>Yes, Cancel</button>
+                            <button onClick={() => setShowCancelModal(false)} className='flex-1 py-2.5 bg-slate-100 rounded-xl font-medium'>No, Keep it</button>
+                            <button onClick={cancelAppointment} className='flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600'>Yes, Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -130,8 +172,12 @@ const MyAppointments = () => {
                             </div>
                             <div className='flex flex-col justify-end gap-2'>
                                 {!item.cancelled && item.payment && !item.isCompleted && <button className='py-2 border rounded sm:min-w-48 text-stone-500 bg-indigo-50'>Paid</button>}
+                                
+                                {/* Pay Online Button Restored */}
                                 {!item.cancelled && !item.payment && !item.isCompleted && <button onClick={() => appointmentRazorpay(item._id)} className='py-2 text-sm text-center transition-all duration-300 border rounded text-stone-500 sm:min-w-48 hover:bg-primary hover:text-white'>Pay Online</button>}
+                                
                                 {!item.cancelled && !item.isCompleted && <button onClick={() => openCancelModal(item._id)} className='py-2 text-sm text-center transition-all duration-300 border rounded text-stone-500 sm:min-w-48 hover:bg-red-600 hover:text-white'>Cancel appointment</button>}
+                                
                                 {item.cancelled && !item.isCompleted && <button className='py-2 text-sm text-center text-red-500 border border-red-500 rounded sm:min-w-48'>Appointment Cancelled</button>}
                                 {item.isCompleted && <button className='py-2 text-sm text-center text-green-500 border border-green-500 rounded sm:min-w-48'>Completed</button>}
                             </div>
