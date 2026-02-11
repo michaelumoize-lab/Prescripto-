@@ -1,31 +1,67 @@
-import { useContext } from 'react'
-import { AdminContext } from '../context/AdminContext'
-import { NavLink } from 'react-router-dom';
-import { assets } from '../assets/assets';
-import { DoctorContext } from '../context/DoctorContext';
+import React, { useContext } from 'react'
+import { NavLink } from 'react-router-dom'
+import { assets } from '../assets/assets'
+import { AdminContext } from '../context/AdminContext' // Import from AdminContext
+import { DoctorContext } from '../context/DoctorContext'
 
 const Sidebar = () => {
-    const { aToken, getAllDoctors } = useContext(AdminContext); // Get your fetch function
-    const { dToken, getAppointments } = useContext(DoctorContext); // Get doctor fetch function
+
+    const { aToken } = useContext(AdminContext)
+    const { dToken } = useContext(DoctorContext)
 
     return (
         <div className='min-h-screen bg-white border-r'>
+            
+            {/* Admin Sidebar Links (Visible when logged in as Admin) */}
             {aToken && (
                 <ul className='text-[#515151] mt-5'>
-                    {/* ... other links ... */}
+                    <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} to={'/admin-dashboard'}>
+                        <img src={assets.home_icon} alt="" />
+                        <p className='hidden md:block'>Dashboard</p>
+                    </NavLink>
                     
-                    <NavLink 
-                        onClick={() => getAllDoctors()} // Force a re-fetch when clicked
-                        className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} 
-                        to={'/doctor-list'}
-                    >
+                    <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} to={'/all-appointments'}>
+                        <img src={assets.appointment_icon} alt="" />
+                        <p className='hidden md:block'>Appointments</p>
+                    </NavLink>
+                    
+                    <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} to={'/add-doctor'}>
+                        <img src={assets.add_icon} alt="" />
+                        <p className='hidden md:block'>Add Doctor</p>
+                    </NavLink>
+                    
+                    <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} to={'/doctor-list'}>
                         <img src={assets.people_icon} alt="" />
                         <p className='hidden md:block'>Doctors List</p>
                     </NavLink>
+
+                    {/* --- ADDED REVIEWS LINK --- */}
+                    <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} to={'/reviews'}>
+                        <img className='w-5' src={assets.appointment_icon} alt="" />
+                        <p className='hidden md:block'>User Reviews</p>
+                    </NavLink>
                 </ul>
             )}
-            
-            {/* Repeat similar logic for dToken links if needed */}
+
+            {/* Doctor Sidebar Links (Visible when logged in as Doctor) */}
+            {dToken && (
+                <ul className='text-[#515151] mt-5'>
+                    <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} to={'/doctor-dashboard'}>
+                        <img src={assets.home_icon} alt="" />
+                        <p className='hidden md:block'>Dashboard</p>
+                    </NavLink>
+                    
+                    <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} to={'/doctor-appointments'}>
+                        <img src={assets.appointment_icon} alt="" />
+                        <p className='hidden md:block'>Appointments</p>
+                    </NavLink>
+                    
+                    <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} to={'/doctor-profile'}>
+                        <img src={assets.people_icon} alt="" />
+                        <p className='hidden md:block'>Profile</p>
+                    </NavLink>
+                </ul>
+            )}
         </div>
     )
 }
