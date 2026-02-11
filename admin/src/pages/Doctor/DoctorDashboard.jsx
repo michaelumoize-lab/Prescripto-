@@ -23,6 +23,7 @@ const DoctorDashboard = () => {
   }, [dToken]);
 
   return (
+    // Condition ? (If true render this) : (Else render this)
     dashData && slotDateFormat ? (
       <div className="m-5">
         <div className="flex flex-wrap gap-3">
@@ -72,7 +73,6 @@ const DoctorDashboard = () => {
                   <p className="text-xs font-medium text-green-500">Completed</p>
                 ) : (
                   <div className="flex gap-2">
-                    {/* Disable clicks if an action is currently loading */}
                     <img
                       onClick={() => !loading && cancelAppointment(item._id)}
                       className={`w-10 cursor-pointer ${loading ? 'opacity-50' : ''}`}
@@ -92,6 +92,8 @@ const DoctorDashboard = () => {
           </div>
         </div>
       </div>
+    ) : (
+      <div className="m-5 text-gray-500">Loading Dashboard Data...</div> // This was the missing part!
     )
   );
 };
