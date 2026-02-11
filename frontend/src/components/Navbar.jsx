@@ -90,7 +90,7 @@ const Navbar = () => {
             className='relative flex items-center gap-2 cursor-pointer group'
             onClick={() => setShowProfileMenu(prev => !prev)}
           >
-            <img className='rounded-full size-8' src={userData?.image || assets.profile_pic} alt="" />
+            <img className='rounded-full size-8' src={userData?.image || assets.upload_icon} alt="" />
             <img className='w-2.5' src={assets.dropdown_icon} alt="" />
 
             {/* Profile Dropdown Menu */}

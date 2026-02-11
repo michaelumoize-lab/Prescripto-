@@ -155,11 +155,12 @@ const MyProfile = () => {
                     <p className="font-medium">Gender:</p>
                     {
                         isEdit
-                            ? <select className="bg-gray-100 max-w-20" onChange={(e) => setUserData(prev => ({ ...prev, gender: e.target.value }))} value={userData.gender}>
+                            ? <select className="bg-gray-100 max-w-20" onChange={(e) => setUserData(prev => ({ ...prev, gender: e.target.value }))} value={userData.gender || 'Not Selected'}>
+                                <option value="Not Selected">Not Selected</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                             </select>
-                            : <p className="text-gray-400">{userData.gender}</p>
+                            : <p className="text-gray-400">{userData.gender || 'Not Selected'}</p>
                     }
                     <p className="font-medium">Birthday:</p>
                     {
