@@ -10,6 +10,7 @@ import MyAppointments from './pages/MyAppointments'
 import Appointment from './pages/Appointment'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop'
 
 import JobOpenings from './pages/JobOpenings'
 import ApplyJob from './pages/ApplyJob'
@@ -30,6 +31,8 @@ const App = () => {
     <div className='mx-4 sm:mx-[10%]'>
       {/* --- Added Loading Component --- */}
       <Loading loading={loading} />
+
+      <ScrollToTop />
 
       <ToastContainer />
 
